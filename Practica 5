@@ -1,0 +1,36 @@
+x<-c(24,35,67,87)
+datos<-matrix(x,nrow=2,ncol=2)
+
+funcion5<-function(datos){
+  a<-rowSums(datos)
+  b<-colSums(datos)
+  mat<-a%*%t(b)
+  total<-sum(a)
+  #dataframe donde cada entrada es una lista
+  mat2<-(1/total)*mat #matriz ni+ * n+j
+  
+  ji<-sum(((datos-mat2)^2)/(mat2))
+  G<-2*sum(datos*(log(datos/mat2)))
+ 
+  desv<-(((datos-mat2)^2)) 
+  desv
+  
+  #matriz de porcentajes
+  porc<-100*(datos/total)
+  porc
+  
+  #porcentajes por FILAS
+  #a es la suma por filas
+  porcfilas<-100*(a/total)
+  porcfilas
+  
+  #porcentajes por COLUMNAS
+  #a es la suma por columnas
+  porcol<-100*(b/total)
+  porcol
+
+  tabla<-matrix(data=NA,nrow=5,ncol=length(datos))
+  dimnames(tabla)<-list(c("Estimador M","Desviacion","% por nij","% por fila","% por columna"),paste("n",seq(1:length(datos))))
+  tabla
+
+}

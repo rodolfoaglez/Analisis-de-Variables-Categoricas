@@ -1,0 +1,81 @@
+#tabla de contingencias de Enfermedad cardiaca dado que roncan
+
+ronca<-data.frame(matrix(c(24,1355,35,603,21,192,30,224),ncol=2,byrow=TRUE))
+dimnames(ronca)<-list(ronc=c("Nunca","A veces","Frecuentemente","Siempre"),enfcard=c("Si","No"))
+ronca
+
+scores.a<-c(0,2,4,5) ##se van priorizando las categorias por filas
+scores.b<-c(0,2,4,6) ##porque R no sabe que primero va Nunca, a veces, frecuentmenete, etc
+scores.c<-0:3 #asi ya se van jerarquizando las categorias de las filas
+scores.d<-1:4
+
+ronquido.lg.a<-glm(ronca~scores.a,family=binomial)##glm(de donde se van a tomar los dato~variables indep)
+help(glm)
+
+
+#####################
+crabs<-read.csv("http://www.hofroe.net/stat557/data/crab.txt",header=TRUE,sep="\t")
+View(crabs)
+attach(crabs)
+cases<-table(grp)
+avgwt<-tapply(Weight,grp,mean)
+
+grp<-cut(Weight,breaks=c(0,1775,2025,2275,2525,2775,3025,Inf),dig.lab=4)
+avgwt<-tapply(Weight,grp,mean) ##peso medio
+avgwt
+
+totsat<-tapply(Satellite,grp,sum) #total de satelites por cada intervalo
+totsat
+
+
+crabsgp<-data.frame(cbind(Weight=avgwt,cases=cases,satell=totsat))#combinar elementos por columnas o por filas
+crabsgp
+
+detach(crabs) ##inverso al attach
+crabsgp.glm1<-glm(satell~Weight,offset=log(cases),family=poisson,data=crabsgp)##queremos ver si los datos de satellite que tiene la hembre tienen relacion con el peso
+summary(crabsgp.glm1)
+
+crabsgp.glm0<-update(crabsgp.glm1,satell~1)
+crabsgp.glm0
+
+round(residuals(crabsgp.glm1,type="pearson"),2)##residuales de pearson
+round(residuals(crabsgp.glm1,type="deviance"),2)
+
+#tambien podemos hacer el calculo de los residuos ajustados
+
+snoring<-matrix(c(24,1355,35,603,21,192,30,224),ncol=2,byrow=TRUE)
+dimnames(snoring)<-list(snore=c("Nunca","A veces","Frecuentemente","Siempre"),heartdisease=c("Si","No"))
+snoring
+snoring.lg.a<-glm(snoring~scores.a,family=binomial())
+snoring.lg.b<-glm(snoring~scores.b,family=binomial())
+snoring.lg.c<-glm(snoring~scores.c,family=binomial())
+snoring.lg.d<-glm(snoring~scores.d,family=binomial())
+
+#para ver coeficientes sin hacer uso de la funcion summary
+coef(snoring.lg.a)
+coef(snoring.lg.b)
+coef(snoring.lg.c)
+coef(snoring.lg.d)
+
+predict(snoring.lg.a,type="response")
+predict(snoring.lg.b,type="response")
+predict(snoring.lg.c,type="response")
+predict(snoring.lg.d,type="response")
+
+#modificando el numero de cifras significativas
+print(predict(snoring.lg.a,type="response"),digits=15)
+print(predict(snoring.lg.b,type="response"),digits=15)
+print(predict(snoring.lg.c,type="response"),digits=15)
+print(predict(snoring.lg.d,type="response"),digits=15)
+
+snoring.probit<-glm(snoring~scores.a,family=binomial(link="probit"))
+summary(snoring.probit)
+
+snoring.logit<-glm(snoring~scores.a,family=binomial(link="logit"))
+summary(snoring.logit)
+
+#podemos darnos cuenta que, para un numero de datos, no necesariamente debemos tener datos parecidos si cambiamos la funcion de enlace
+
+#pi(x)=-3.86625+0.39734x
+#probabilidad de que Si presente enfermedad cardiaca dado que ronca a veces
+#pi(2)<-la prob de enf card a veces

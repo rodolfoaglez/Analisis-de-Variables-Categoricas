@@ -1,4 +1,4 @@
-#tabla de contingencias de Enfermedad cardiaca dado que roncan
+#tabla de contingencias de Enfermedad cardiaca dado que roncan #3(calculo de ajustes)
 
 ronca<-data.frame(matrix(c(24,1355,35,603,21,192,30,224),ncol=2,byrow=TRUE))
 dimnames(ronca)<-list(ronc=c("Nunca","A veces","Frecuentemente","Siempre"),enfcard=c("Si","No"))

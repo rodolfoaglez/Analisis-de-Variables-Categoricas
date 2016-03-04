@@ -1,0 +1,32 @@
+tabla1<-read.csv("http://www.hofroe.net/stat557/data/crab.txt",header=TRUE,sep="\t")
+View(tabla1)
+(tabla1$Satell.bin=ifelse(tabla$Satellite > 0,1,0))
+
+#vamos a usa un modelo lineal generalizado, vamos a especificar que sea logistca
+#dentro del glm se debe poner (v.dependiente~v.independiente,familia,datos)
+#vamos a ver que hay relacion en tre sattelli bin y caparazon usando fam binomial
+crab.fit.logit<-glm(tabla$Satell.bin~tabla$Width,family=binomial,data=tabla1)
+#la variable de caparazon Width es continua, la vamos a discretizar (hacer categorias)
+#la funcion CUT para ver cuantos casos caen en ciertas catregorias
+#(donde se va a fijar el comando,puntos de corte para nuestra nueva escala,)
+tabla1$W.fac<-cut(tabla1$Width,breaks=c(0,seq(23.25,29.25),Inf))
+View(tabla1)
+
+prop<-aggregate(tabla1$Satell.bin,by=list(W=tabla1$W.fac),mean)$x
+
+plot.x<-aggregate(tabla1$Width,by=list(W=tabla1$W.fac),mean)$x
+X11()
+
+plot(y=prop,x=plot.x,pch=16,type="p",xlab=expression(paste("Anchura",italic(x),"en cm")),ylab=expression(paste("Proporción de satélites que tiene",{~pi},"(x)")),ylim=c(0,1),xlim=c(20,34))
+
+a<-c(4.1,3.2,6.1,3.1) #lo vamos a usar como ejemplo para ver un comando que usaremos mas adelante
+
+order(a) #muestra el orden de las posiciones originales de nuestro vector
+rank(a) #muestra las posiciones que ocupa cada elemento en la ordenacion total (de menor al mayor)
+
+ind<-order(tabla1$Width)
+#cuando tenemos una sucesion de puntos y queremos unirlos por pares usamos LINES
+lines(x=tabla1$Width[ind],y=predict(crab.fit.logit,type="response")[ind],type="l",lty=3)
+##obtenemos la curva que mejor ajusta en nuestro modelo de regresion logistica
+
+

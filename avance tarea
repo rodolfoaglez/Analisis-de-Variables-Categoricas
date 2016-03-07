@@ -1,0 +1,18 @@
+#x<-c(.57*619,.43*619,619,.61*541,.39*541,541,.55*8702,.45*8702,8702,.58*891,.42*891,891,.59*535,.41*535,535)
+#datos<-matrix(x,nrow=5,ncol=3,byrow=T)
+#datos
+#dimnames(datos)<-list(c("Reuters","Rasmussen","NBC","Morning Consult","Economist"),c("Clinton","Sanders","Votantes"))
+#datos<-data.frame(datos)
+#View(datos)
+#cand.fit.logit<-glm(datos$Clinton~datos$Votantes,family=binomial,data=datos)
+
+x<-c(.57,.43,619,.61,.39,541,.55,.45,8702,.58,.42,891,.59,.41,535)
+datos<-matrix(x,nrow=5,ncol=3,byrow=T)
+datos
+dimnames(datos)<-list(c("Reuters","Rasmussen","NBC","Morning Consult","Economist"),c("Clinton","Sanders","Votantes"))
+datos<-data.frame(datos)
+View(datos)
+sum(datos$Votantes)
+
+cand.fit.logit<-glm(datos$Clinton~datos$Votantes/(sum(datos$Votantes)),family=binomial,data=datos)
+summary(cand.fit.logit)

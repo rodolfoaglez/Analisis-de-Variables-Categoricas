@@ -1,0 +1,56 @@
+tabla1<-read.csv("http://www.hofroe.net/stat557/data/crab.txt",header=TRUE,sep="\t")
+View(tabla1)
+(tabla1$Satell.bin=ifelse(tabla1$Satellite > 0,1,0))
+
+#vamos a usa un modelo lineal generalizado, vamos a especificar que sea logistca
+#dentro del glm se debe poner (v.dependiente~v.independiente,familia,datos)
+#vamos a ver que hay relacion en tre sattelli bin y caparazon usando fam binomial
+crab.fit.logit<-glm(tabla1$Satell.bin~tabla1$Width,family=binomial,data=tabla1)
+#la variable de caparazon Width es continua, la vamos a discretizar (hacer categorias)
+#la funcion CUT para ver cuantos casos caen en ciertas catregorias
+#(donde se va a fijar el comando,puntos de corte para nuestra nueva escala,)
+tabla1$W.fac<-cut(tabla1$Width,breaks=c(0,seq(23.25,29.25),Inf))
+View(tabla1)
+
+prop<-aggregate(tabla1$Satell.bin,by=list(W=tabla1$W.fac),mean)$x
+#reagrupar en subconjutos
+plot.x<-aggregate(tabla1$Width,by=list(W=tabla1$W.fac),mean)$x
+X11()
+
+plot(y=prop,x=plot.x,pch=16,type="p",xlab=expression(paste("Anchura",italic(x),"en cm")),ylab=expression(paste("Proporción de satélites que tiene",{~pi},"(x)")),ylim=c(0,1),xlim=c(20,34))
+
+a<-c(4.1,3.2,6.1,3.1) #lo vamos a usar como ejemplo para ver un comando que usaremos mas adelante
+
+order(a) #muestra el orden de las posiciones originales de nuestro vector
+rank(a) #muestra las posiciones que ocupa cada elemento en la ordenacion total (de menor al mayor)
+
+ind<-order(tabla1$Width)
+#cuando tenemos una sucesion de puntos y queremos unirlos por pares usamos LINES
+lines(x=tabla1$Width[ind],y=predict(crab.fit.logit,type="response")[ind],type="l",lty=3)
+#LINES un conjunto de puntos, unirlos con una linea recta
+##obtenemos la curva que mejor ajusta en nuestro modelo de regresion logistica
+
+##############################
+#Clase de lunes 07 de Marzo
+
+library(MASS)
+confint(crab.fit.logit) #intervalos de confianza de los coeficientres alfa y beta
+summary(crab.fit.logit) #podemos observar en Coefficientes los valores para construir nuestra ecuacion 
+
+ind<-order(tabla1$Width)
+X11()
+par(family="sans")
+crab.predict<-predict(crab.fit.logit,type="response",se=T)
+plot(tabla1$Width[ind],crab.predict$fit[ind],axes=F,type="l",xlim=c(20,33),
+     ylab="Probabilidad de tener al menos un satellite",xlab=expression(paste("Anchura ",italic(x), " cm")))
+                                                                                                                                                                                                
+axis(2,at=seq(0,1,0.2)) #valores de Y en la grafica
+axis(1,at=seq(20,32,2)) #valores de X en la grafica
+
+lines(tabla1$Width[ind],crab.predict$fit[ind]-1.96*crab.predict$se[ind],lty=3,col="blue",lwd=2)
+##se crea la grafica del intervalo inferior
+lines(tabla1$Width[ind],crab.predict$fit[ind]+1.96*crab.predict$se[ind],lty=3,col="blue",lwd=2)
+##se crea la grafica del intervalo superior
+
+#logit(pi(x))=-12.3508+0.4972x
+#

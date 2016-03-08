@@ -1,0 +1,23 @@
+vot<-c(619,541,8702,891,535)
+clinton<-round((c(.57,.61,.55,.58,.59))*vot,0)
+sanders<-round((c(.43,.39,.45,.42,.41))*vot,0)
+encuesta<-c("Reuters","Rasmussen","NBC","Morning Consult","Economist")
+
+
+datos<-data.frame(encuesta,clinton,sanders,vot)
+attach(datos)
+cand.fit.logit<-glm(cbind(clinton,sanders)~encuesta,family=binomial,data=datos)
+#cuando buscamos help(glm), R nos dice que:
+#For binomial and quasibinomial families the response can also be specified as 
+#a factor (when the first level denotes failure and all others success) or as a 
+#two-column matrix with the columns giving the numbers of successes and failures.
+summary(cand.fit.logit)
+#Dado que la el éxito es que voten por Clinton y el fracaso que voten por Sanders:
+exp(-0.04288) #Morning Consult. Odd=0.9580263 significa que es más probable el fracaso
+#por cada 1 voto por Sanders, hay .95 de probabilidad de que haya un voto por Clinton 
+exp(-.16605) #NBC. Odd=0.8470039 significa que es mas probable el fracaso
+#por cada 1 voto por Sanders, hay .84 de probabilidad de que haya un voto por Clinton
+exp(.08056) #Rasmussen. Odd=1.083894 significa que es mas probable el exito
+#por cada 1 voto por Clinton, hay .083 de probabilidad de que haya un voto por Sanders
+exp(-.08370)#Reuters. Odd=0.9197071 significa que es mas probable el fracaso
+#por cada 1 voto por Sanders, hay 0.9197 de probabilidad de que haya un voto por Clinton

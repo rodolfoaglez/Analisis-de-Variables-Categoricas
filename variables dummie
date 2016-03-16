@@ -1,0 +1,11 @@
+install.packages("dummies")
+library(dummies)
+letters<-c("a","a","b","c","d","e","f","g","h","b","b")
+D<-dummy(letters)
+D
+
+#ejemplo2
+x<-factor(letters)
+contr.treatment(x)
+#curvas roc, buscar en agresti
+#seleccion de modelos

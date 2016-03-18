@@ -1,0 +1,22 @@
+tabla1<-read.csv("http://www.tinyurl.com/datosRIKZ",header=TRUE,sep=" ")
+View(tabla1)
+attach(tabla1)
+modelo<-lm(Richness~fExp+angle2+NAP,data=tabla1)
+summary(modelo)
+modelo2<-lm(Richness~grainsize+humus,data=tabla1)
+modelo3<-lm(Richness~fWeek,data=tabla1)
+help(lm)
+modelo4<-lm(Richness~NAP,data=tabla1)#relacion entre la riqueza de las especies con la altura del mar
+install.packages("AICcmodavg")
+library(AICcmodavg)
+AIC(modelo,modelo2,modelo3,modelo4)
+##el modelo que tenga el AIC menor, sera el mejor
+##el primero modelo es el mejor
+Cand.mod<-list()
+Cand.mod[[1]]<-modelo
+Cand.mod[[2]]<-modelo2
+Cand.mod[[3]]<-modelo3
+Cand.mod[[4]]<-modelo4
+Cand.mod
+aictab(cand.set=Cand.mod)
+##sigue teniendo el menor valor el primero, por lo tanto es el mejor

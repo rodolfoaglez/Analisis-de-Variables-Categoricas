@@ -1,0 +1,88 @@
+install.packages("datasets")
+install.packages("MASS")
+library(datasets)
+library(MASS)
+
+
+#explorando la base
+data(Titanic)
+dimnames(Titanic)
+View(Titanic)
+
+
+#El modelo loglineal permitirá buscar relaciones entre las variables
+##en tablas de contingencia
+
+#Se busca explicar las fecuencias esperadas en la base con el modelo
+## mas simplificado posible
+
+
+
+#Modelo para tabla de contingencia Sex/Survived
+SubMit<-margin.table(Titanic,c(2,4))
+SubMit
+
+model<-loglm(~Sex+Survived,data=SubMit)
+model
+#hipotesis nula: variables independientes
+
+#Call:
+ # loglm(formula = ~Sex + Survived, data = SubMit)
+
+#Statistics:
+ # X^2 df P(> X^2)
+#Likelihood Ratio 434.4688  1        0
+#Pearson          456.8742  1        0
+#Como el p value es 0 rechazamos la hipotesis nula, por lo tanto si hay cierta relacion
+#entre salvarse en el Titanic y el sexo del pasajero
+
+fitted(model)
+coef(model)
+residuals(model,type="pearson")
+
+
+#modelo para tabla de contingencia Class/Survived
+SubTit<-margin.table(Titanic,c(1,4))
+model2<-loglm(~Class+Survived, data=SubTit)
+model2
+
+#Call:
+ # loglm(formula = ~Class + Survived, data = SubTit)
+
+#Statistics:
+#  X^2 df P(> X^2)
+#Likelihood Ratio 180.9014  3        0
+#Pearson          190.4011  3        0
+
+fitted(model2)
+coef(model2)
+residuals(model2,type="pearson")
+
+
+##Modelo para toda la base
+model3<-loglm(~Class+Sex+Age+Survived,data=Titanic)
+model3
+
+#Call:
+ # loglm(formula = ~Class + Sex + Age + Survived, data = Titanic)
+
+#Statistics:
+ # X^2 df P(> X^2)
+#Likelihood Ratio 1243.663 25        0
+#Pearson          1637.445 25        0
+
+fitted(model3)
+coef(model3)
+residuals(model2,type="pearson")
+
+
+#CONCLUIMOS QUE LOS MODELOS NO SON ADECUADOS PARA EXPLICAR LAS FRECUENCIAS DE CELDA
+
+#GRAFICAMENTE
+install.packages("vcd")
+library(vcd)
+
+X11()
+layout(1:2)
+mosaic(model,shade=T,legend=T)
+mosaic(mo

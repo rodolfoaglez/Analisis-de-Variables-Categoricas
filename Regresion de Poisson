@@ -1,0 +1,43 @@
+##Regresion de Poisson
+
+install.packages("ggplot2")
+install.packages("sandwich")
+install.packages("msm")
+library(ggplot2)
+library(sandwich)
+library(msm)
+
+##Estadisticas descriptivas
+p<-read.csv("http://www.ats.ucla.edu/stat/data/poisson_sim.csv")
+p<-within(p, {
+  prog<-factor(prog,levels=1:3,labels=c("General","Academico","Vocacional"))
+  id<-factor(id)
+})
+View(p)
+summary(p)
+
+
+with(p,tapply(num_awards,prog,function(x){
+    sprintf("M(SD)=%1.2f (%1.2f)",mean(x),sd(x))
+  }))
+
+ggplot(p,aes(num_awards,fill=prog))+
+  geom_histogram(binwidth=.5,position="dodge")
+
+
+#Modelo Poisson glm
+summary(m1<-glm(num_awards~prog+math,family="poisson",data=p))
+
+##Errores estandar robustos
+cov.m1<-vcovHC(m1,type="HC0")
+std.err<-sqrt(diag(cov.m1))
+r.est<-cbind(Estimate=coef(m1),"Robust SE"=std.err,
+             "Pr(>|z|)"=2*pnorm(abs(coef(m1)/std.err),lower.tail = F),
+             LL=coef(m1)-1.96*std.err,
+             UL=coef(m1)+1.96*std.err)
+r.est
+
+with(m1,cbind(res.deviance=deviance,df=df.residual,
+              p=pchisq(deviance,df.residual,lower.tail = F)))
+
+
